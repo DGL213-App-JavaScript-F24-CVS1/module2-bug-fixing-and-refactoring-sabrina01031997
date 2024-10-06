@@ -83,7 +83,7 @@
 
     function render(grid) {
       for (let i = 0; i < grid.length; i++) {
-        ctx.fillStyle = `rgb(${grid[i][0]}, ${grid[i][1]}, ${grid[i][2]})`; // Fixed index to grid[i][1]
+        ctx.fillStyle = `rgb(${grid[i][0]}, ${grid[i][1]}, ${grid[i][2]})`;
         ctx.fillRect(
           (i % CELLS_PER_AXIS) * CELL_WIDTH,
           Math.floor(i / CELLS_PER_AXIS) * CELL_HEIGHT,
@@ -94,12 +94,16 @@
       playerScoreText.textContent = playerScore;
     }
 
-    function updateGridAt(mousePositionX, mousePositionY) {
-      const gridCoordinates = convertCartesiansToGrid(mousePositionX, mousePositionY);
+    function updateGridAt(gridCoordinates) {
       const newGrid = grids[grids.length - 1].slice();
-      floodFill(newGrid, gridCoordinates, newGrid[gridCoordinates.column * CELLS_PER_AXIS + gridCoordinates.row]);
-      grids.push(newGrid);
-      render(newGrid);
+      const colorToChange = newGrid[gridCoordinates.column * CELLS_PER_AXIS + gridCoordinates.row];
+      
+      if (!arraysAreEqual(colorToChange, replacementColor)) {
+        floodFill(newGrid, gridCoordinates, colorToChange);
+        grids.push(newGrid);
+        return true; // Return true if a change was made
+      }
+      return false; // No change made
     }
 
     function updatePlayerScore() {
@@ -129,8 +133,11 @@
 
     canvas.addEventListener("mousedown", gridClickHandler);
     function gridClickHandler(event) {
-      updatePlayerScore();
-      updateGridAt(event.offsetX, event.offsetY);
+      const gridCoordinates = convertCartesiansToGrid(event.offsetX, event.offsetY);
+      if (updateGridAt(gridCoordinates)) { // Call render only if a change occurs
+        updatePlayerScore();
+        render(grids[grids.length - 1]);
+      }
     }
 
     restartButton.addEventListener("mousedown", restartClickHandler);
@@ -184,4 +191,3 @@
     startGame();
   });
 })();
-

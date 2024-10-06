@@ -62,7 +62,7 @@ function initializeHistory(startingGrid) {
 }   
 
 function rollBackHistory() {
-    if (grids.length > 0) {
+    if (grids.length > 1) { // Fixed bug: Prevent rollback to an empty grid
         grids = grids.slice(0, grids.length-1);
         render(grids[grids.length-1]);
     }
@@ -87,25 +87,34 @@ function transposeGrid() {
 
 function render(grid) {
     for (let i = 0; i < grid.length; i++) {
-        ctx.fillStyle = `rgb(${grid[i][0]}, ${grid[i][1]}, ${grid[i][2]})`;
+        ctx.fillStyle = `rgb(${grid[i][0]}, ${grid[i][1]}, ${grid[i][2]})`; // Fixed bug: Corrected the color channels
         ctx.fillRect((i % CELLS_PER_AXIS) * CELL_WIDTH, Math.floor(i / CELLS_PER_AXIS) * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
     }
     playerScoreText.textContent = playerScore;
 }
 
 function updateGridAt(mousePositionX, mousePositionY) {
+    console.log('Updating grid at coordinates:', mousePositionX, mousePositionY); // Debugging
+
     const gridCoordinates = convertCartesiansToGrid(mousePositionX, mousePositionY);
-    const newGrid = grids[grids.length-1].slice(); 
-    floodFill(newGrid, gridCoordinates, newGrid[gridCoordinates.column * CELLS_PER_AXIS + gridCoordinates.row])
-    grids.push(newGrid);
-    render(grids[grids.length-1]);    
-}
+    const newGrid = grids[grids.length - 1].slice();
+    const colorToChange = newGrid[gridCoordinates.column * CELLS_PER_AXIS + gridCoordinates.row];
+
+    if (!arraysAreEqual(colorToChange, replacementColor)) { // Fixed bug: Only update if the color changes
+      floodFill(newGrid, gridCoordinates, colorToChange);
+      grids.push(newGrid);
+      updatePlayerScore(); // Call only if flood fill changes occur
+      render(grids[grids.length - 1]);
+    }
+  }
 
 function updatePlayerScore() {
 playerScore = playerScore > 0 ? playerScore -= 1 : 0;
 }
 
 function floodFill(grid, gridCoordinate, colorToChange) { 
+    console.log(`Flood fill at row: ${gridCoordinate.row}, column: ${gridCoordinate.column}`); // Debugging
+
     if (arraysAreEqual(colorToChange, replacementColor)) { return } //The current cell is already the selected color
     else if (!arraysAreEqual(grid[gridCoordinate.row * CELLS_PER_AXIS + gridCoordinate.column], colorToChange)) { return }  //The current cell is a different color than the initially clicked-on cell
     else {

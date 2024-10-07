@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+</head>
+<body>
+  <header>
+    <h1>Tic Tac Toe</h1>
+    <p>A 2-player Game</p>
+  </header>
+
+  <main>
+    <h2>How to play</h2>
+    <p><strong>Goal:</strong> Get three of your markers in a row, column, or diagonal.</p>
+    <ul>
+      <li>Player 1: Click on a cell to place your marker (Player 1: X).</li>
+      <li>Player 2: Click on a cell to place your marker (Player 2: O).</li>
+      <li>The first player to align three markers in a row, column, or diagonal wins.</li>
+      <li>Use the Undo button to revert the last move.</li>
+    </ul>
+    <div>
+      <canvas width="300" height="300"></canvas>
+    </div>
+    <div>
+      <button id="restart">Restart</button>
+      <button id="undo">Undo</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>Tic Tac Toe - A 2-player Game</p>
+  </footer>
+  <script src="tictactoe.js"></script>
+</body>
+</html>
